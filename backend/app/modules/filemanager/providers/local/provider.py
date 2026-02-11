@@ -74,7 +74,7 @@ class LocalFileSystemProvider(BaseStorageProvider):
         """
         
         # when base_path is the tmp_folder, we need to resolve the path to the tmp_folder otherwise return the full path as it is
-        if (str(self.base_path) == self.tmp_folder):
+        if str(self.base_path) == self.tmp_folder:
             return Path(storage_path).resolve()
         else:
             return (self.base_path / Path(storage_path)).resolve()

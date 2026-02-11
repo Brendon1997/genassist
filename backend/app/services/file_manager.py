@@ -86,6 +86,7 @@ class FileManagerService:
 
         Args:
             file: File to upload
+            file_base: File creating configuration variables
             allowed_extensions: Optional list of allowed file extensions
         """
 
