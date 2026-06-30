@@ -6,6 +6,7 @@ from injector import inject
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 
+from app.core.utils.sensitive_data_utils import redact_structure
 from app.db.models.agent_response_log import AgentResponseLogModel
 from app.schemas.filter import AgentResponseLogFilter
 
@@ -32,10 +33,14 @@ class AgentResponseLogRepository:
         """
         Create a log entry for a given transcript message with the full agent response.
         """
+        # Redact secrets (forwarded Authorization headers, tokens, session
+        # credentials) only at the DB-persistence boundary so the operator's
+        # Bearer is never stored in plaintext. redact_structure returns a new
+        # structure, so the in-memory agent_response used elsewhere is untouched.
         entry = AgentResponseLogModel(
             conversation_id=conversation_id,
             transcript_message_id=transcript_message_id,
-            raw_response=json.dumps(raw_response),
+            raw_response=json.dumps(redact_structure(raw_response)),
             input_tokens=input_tokens,
             output_tokens=output_tokens,
             total_tokens=total_tokens,
